@@ -2,6 +2,7 @@ var path = require('path');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: path.resolve('./src/index.js'),
   output: {
     filename: 'vlibras.js',
@@ -11,8 +12,10 @@ module.exports = {
     'window': 'window'
   },
   plugins: [
-    new CopyWebpackPlugin([
-      { from: 'src/target', to: 'target' }
-    ])
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'src/target', to: 'target' }
+      ]
+    })
   ]
 };

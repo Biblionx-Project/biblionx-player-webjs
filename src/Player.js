@@ -1,7 +1,5 @@
 var window = require("window");
-var assign = require("object-assign");
 var inherits = require("inherits");
-var path = require("path");
 var url = require("url-join");
 var EventEmitter = require("events").EventEmitter;
 
@@ -20,7 +18,7 @@ const STATUSES = {
 };
 
 function Player(options) {
-  this.options = assign(
+  this.options = Object.assign(
     {
       translator: config.translatorUrl,
       targetPath: "target",
