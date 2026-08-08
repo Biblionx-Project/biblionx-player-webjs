@@ -15,7 +15,7 @@ This project is a component of VLibras Web (Plugins and Widget).
 ![License](https://img.shields.io/badge/license-LGPLv3-blue.svg)
 ![VLibras](https://img.shields.io/badge/vlibras%20suite-2026-green.svg)
 
-> **Nota — Biblionx-Project:** este repositorio es una adaptación de [VLibras](https://www.vlibras.gov.br/) usada como referencia de arquitectura para el Trabajo de Grado de Biblionx (traductor de texto a Lengua de Señas Dominicana, LSRD). El componente activo y funcional del proyecto es [`modelo-traductor-lsrd`](https://github.com/Biblionx-Project/modelo-traductor-lsrd); este repo se conserva como referencia histórica del ecosistema VLibras original, no como dependencia activa del producto final. Ver la organización [Biblionx-Project](https://github.com/Biblionx-Project).
+> **Note — Biblionx-Project:** this repository is an adaptation of [VLibras](https://www.vlibras.gov.br/) kept as an architecture reference for the Biblionx thesis project (Dominican Sign Language, LSRD, text translator). The project's active, functional component is [`modelo-traductor-lsrd`](https://github.com/Biblionx-Project/modelo-traductor-lsrd); this repo is kept as a historical reference of the original VLibras ecosystem, not as an active dependency of the final product. See the [Biblionx-Project](https://github.com/Biblionx-Project) organization.
 
 ## Installation & Build
 
