@@ -31,9 +31,7 @@ npm run build
 
 ## Contributors
 
-* Mateus Pires - <mateuspires@lavid.ufpb.br>
-* Suanny Fabyne - <suanny@lavid.ufpb.br>
-* Thiago Filipe - <thiago.filipe@lavid.ufpb.br>
+Originally developed by the Biblionx team.
 
 ## License
 
