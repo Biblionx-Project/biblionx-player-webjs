@@ -6,6 +6,5 @@ var Biblionx = {
 };
 
 window.Biblionx = Biblionx;
-window.VLibras = Biblionx;
 module.exports = Biblionx;
 

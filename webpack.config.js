@@ -4,7 +4,6 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   mode: 'production',
   entry: {
-    vlibras: path.resolve('./src/index.js'),
     biblionx: path.resolve('./src/index.js')
   },
   output: {

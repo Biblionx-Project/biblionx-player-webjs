@@ -1,41 +1,136 @@
-# Biblionx WebGL Sign Language Player
+# Biblionx Web Sign Player
 
-WebGL 3D Avatar Sign Language Player component for Biblionx, delivering 3D animated signs in Dominican Sign Language (LSRD - Lengua de Señas de la República Dominicana).
-
-*Adapted from the [VLibras](https://www.vlibras.gov.br/) Web (Plugins and Widget) Player component for the Biblionx ecosystem.*
+Browser-side WebGL player for **Biblionx**, a UNICDA thesis project (Trabajo de Grado) that translates
+written Spanish (Dominican Republic) into **Dominican Sign Language (LSRD, Lengua de Señas Dominicana)**.
+The player loads a Unity WebGL 3D avatar, sends text to the Biblionx translation API, and animates the
+resulting LSRD gloss sequence.
 
 ![Version](https://img.shields.io/badge/version-v1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-LGPLv3-blue.svg)
-![Biblionx](https://img.shields.io/badge/biblionx%20suite-2026-green.svg)
 
-> **Note — Biblionx-Project:** this repository provides the WebGL sign language player runtime for the Biblionx ecosystem (Dominican Sign Language, LSRD, text translator). It renders 3D avatar animations, connects to the translation endpoints, and coordinates playback with browser extensions and web widgets. The core Dominican Sign Language translator service is located in [`biblionx-lsrd-translator`](https://github.com/Biblionx-Project/biblionx-lsrd-translator). See the [Biblionx-Project](https://github.com/Biblionx-Project) organization.
+## Role in the Biblionx architecture
 
-## Installation & Build
+This repository is one of the Biblionx architecture reference components in the
+[Biblionx-Project](https://github.com/Biblionx-Project) organization. The active product is
+[`biblionx-lsrd-translator`](https://github.com/Biblionx-Project/biblionx-lsrd-translator).
 
-To install dependencies:
-```bash
-npm install
+```
+text (Spanish) --> translation API --> LSRD gloss --> web sign player (this repo) --> 3D avatar
+                                                        ^
+                                       browser plugins / web widget embed the player
 ```
 
-To compile and build the package:
+- Sends text to the translation endpoint and receives an LSRD gloss sequence.
+- Points the avatar at the sign dictionary endpoint (per region) to download sign animations.
+- Exposes a small event-driven JavaScript API used by the Biblionx browser plugins and web widget.
+
+## Project structure
+
+| Path | Purpose |
+| --- | --- |
+| `src/index.js` | Entry point; exposes `{ Player }` as `window.Biblionx` and as the module export |
+| `src/Player.js` | `Player` class: loads the Unity target, translates text, controls playback, emits events |
+| `src/GlosaTranslator.js` | HTTP client for the translation API (30 s timeout) |
+| `src/PlayerManagerAdapter.js` | Bridge between JavaScript and the Unity `PlayerManager`, `EmotionBridge` and `CustomizationBridge` objects |
+| `src/config.js` | Endpoint and region defaults (`DO` / `LSRD`) |
+| `src/target/` | Prebuilt Unity WebGL build (`UnityLoader.js`, `playerweb.json`, `*.unityweb`) |
+| `demo/index.html` | Minimal demo page |
+
+## Requirements
+
+- Node.js and npm (Webpack 5 toolchain)
+- A browser with WebGL support
+- A running Biblionx translation backend (defaults to `http://localhost:8000`)
+
+## Install and build
+
 ```bash
+npm install
 npm run build
 ```
 
-This compiles `src/index.js` via Webpack and outputs the bundles `build/vlibras.js` and `build/biblionx.js` along with Unity WebGL target assets in `build/target/`.
+`npm run build` runs Webpack in production mode on `src/index.js` and writes to `build/`:
+
+- `build/biblionx.js` — the player bundle
+- `build/target/` — the Unity WebGL assets copied from `src/target/`
+
+## Usage
+
+Serve the repository (or your page plus `build/`) over HTTP, then:
+
+```html
+<div id="wrapper"></div>
+<script>
+  // Optional: override endpoints before loading the bundle
+  window.BIBLIONX_BACKEND_URL = 'http://localhost:8000';
+</script>
+<script src="build/biblionx.js"></script>
+<script>
+  var player = new Biblionx.Player({
+    targetPath: 'build/target' // where UnityLoader.js and playerweb.json live
+  });
+
+  player.on('load', function () {
+    player.translate('Hola, ¿cómo estás?');
+  });
+
+  player.on('error', function (err) {
+    console.error('Player error:', err); // 'unsupported' (no WebGL) or 'timeout_error'
+  });
+
+  player.load(document.getElementById('wrapper'));
+</script>
+```
+
+### Player options
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `translator` | `config.translatorUrl` | Translation API endpoint |
+| `targetPath` | `"target"` | Base path of the Unity WebGL target |
+| `onLoad` | — | Called when the avatar is ready; if omitted, the player plays any pending gloss |
+| `progress` | — | Constructor called as `new progress(wrapper)` to render a loading indicator |
+
+### Methods
+
+`load(wrapper)`, `translate(text, { isEnabledStats })`, `play(gloss)`, `continue()`, `repeat()`,
+`pause()`, `stop()`, `setSpeed(speed)`, `setRegion(region)`, `changeAvatar(name)`,
+`toggleSubtitle()`, `applyEmotion(action, intensity)`, `setPersonalization(url)`, `playWellcome()`.
+
+### Events
+
+`load`, `translate:start`, `translate:end`, `gloss:start`, `gloss:end`, `animation:play`,
+`animation:pause`, `animation:end`, `animation:progress`, `response:glosa`, `GetAvatar`,
+`start:welcome`, `stop:welcome`, `error`.
 
 ## Configuration
 
-Player endpoints and regional defaults can be configured via environment variables or global `window` properties:
-- `BIBLIONX_BACKEND_URL`: Base backend URL (default: `http://localhost:8000`)
-- `BIBLIONX_TRANSLATOR_URL`: Translation API endpoint (default: `http://localhost:8000/api/v1/translate`)
-- `BIBLIONX_DICTIONARY_URL`: Dictionary assets endpoint (default: `http://localhost:8000/dictionary/`)
-- Default Region: `DO` (Dominican Republic) / `LSRD` (Dominican Sign Language)
+Endpoints are resolved in `src/config.js`. In the browser, set these as `window` globals before the
+bundle loads; `process.env` values with the same names are used only where a `process` object exists.
 
-## Contributors & Attribution
+| Variable | Default |
+| --- | --- |
+| `BIBLIONX_BACKEND_URL` (alias `BIBLIONX_API_URL` on `window`) | `http://localhost:8000` |
+| `BIBLIONX_TRANSLATOR_URL` | `<backend>/api/v1/translate` |
+| `BIBLIONX_DICTIONARY_URL` | `<backend>/dictionary/` |
+| `BIBLIONX_DICTIONARY_STATIC_URL` | `<backend>/static/BUNDLES/` |
 
-Originally developed by the VLibras team (Laboratório de Aplicações de Vídeo Digital - LAVID / UFPB). Adapted, modernized, and maintained as an architectural reference for Dominican Sign Language (LSRD) avatar rendering by the Biblionx team (UNICDA thesis project).
+The default region is `DO` and the sign language is `LSRD`. Sign animations are loaded from
+`<dictionary URL><region>/`; `translate(text, { isEnabledStats: false })` switches to the static
+dictionary URL.
 
-## License
+### Translation API contract
 
-This project is licensed under the LGPLv3 License - see the [LICENSE](LICENSE) file for details. Derived from the open-source VLibras project, maintaining full compliance with the GNU Lesser General Public License v3.0.
+The player sends `POST <translator>` with JSON `{ text, texto, domain }` (`domain` is the page host)
+and accepts any of these responses:
+
+1. `nlp_analysis.secuencia_lsrd` — array of glosses, joined with spaces
+2. `secuencia_senas` — array of objects; `palabra_es` or `letra` is used for each sign
+3. a plain-text body used as the gloss
+
+If the request fails, the input text is played in upper case (fingerspelling fallback).
+
+## Origins
+
+This project was initially forked from the open-source VLibras project. It has since evolved
+enough to stand as an independent project of its own. Licensed under LGPLv3 — see [LICENSE](LICENSE).

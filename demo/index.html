@@ -2,21 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VLibrasJS Demo</title>
+    <title>Biblionx Player Demo</title>
 </head>
 <body>
-    <h1>VLibrasJS Demo</h1>
+    <h1>Biblionx Player Demo</h1>
 
     <div id="wrapper"></div>
-    <script src="../build/vlibras.js"></script>
+    <script src="../build/biblionx.js"></script>
     <script>
-        var player = new VLibras.Player({
-            target: { name: 'rnp_webgl', path: '../build/target' }
+        var player = new Biblionx.Player({
+            targetPath: '../build/target'
         });
 
         player.on('load', function () {
-            ;
-        //    console.log('Player loaded');
+            // console.log('Player loaded');
         });
 
         player.load(document.getElementById('wrapper'));

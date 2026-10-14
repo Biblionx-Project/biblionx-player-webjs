@@ -213,7 +213,7 @@ Player.prototype._initializeTarget = function () {
 
         this.emit("error", "unsupported");
         alert("Su navegador no soporta WebGL");
-        console.error("Su navegador no soporta WebGL");
+        console.error("Your browser does not support WebGL");
         deny();
       },
     });
