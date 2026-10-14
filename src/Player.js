@@ -37,7 +37,7 @@ function Player(options) {
   this.gameContainer = null;
   this.player = null;
   this.status = STATUSES.idle;
-  this.region = "BR";
+  this.region = config.defaultRegion || "DO";
 
   this.playerManager.on("load", () => {
     this.loaded = true;
@@ -97,7 +97,7 @@ Player.prototype.translate = function (text, { isEnabledStats = true } = {}) {
     if (error) {
       this.play(text.toUpperCase());
       if (error === "timeout_error") this.emit("error", "timeout_error");
-      else return this.emit("translate:end");
+      return this.emit("translate:end");
     }
 
     this.play(gloss, { fromTranslation: true, isEnabledStats });
@@ -211,9 +211,9 @@ Player.prototype._initializeTarget = function () {
           return accept();
         }
 
-        this.onError("unsupported");
-        alert("Seu navegador não suporta WEBGL");
-        console.error("Seu navegador não suporta WEBGL");
+        this.emit("error", "unsupported");
+        alert("Su navegador no soporta WebGL");
+        console.error("Su navegador no soporta WebGL");
         deny();
       },
     });

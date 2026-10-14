@@ -115,7 +115,7 @@ function toInt(boolean) {
 }
 
 function toBoolean(bool) {
-  return bool != "False";
+  return bool === true || bool === "true" || bool === "True";
 }
 
 module.exports = PlayerManagerAdapter;

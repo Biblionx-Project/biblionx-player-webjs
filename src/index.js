@@ -1,9 +1,11 @@
 var window = require('window');
 var Player = require('./Player.js');
 
-var VLibras = {
+var Biblionx = {
   Player: Player
 };
 
-window.VLibras = VLibras;
-module.exports = VLibras;
+window.Biblionx = Biblionx;
+window.VLibras = Biblionx;
+module.exports = Biblionx;
+

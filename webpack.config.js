@@ -3,9 +3,12 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'production',
-  entry: path.resolve('./src/index.js'),
+  entry: {
+    vlibras: path.resolve('./src/index.js'),
+    biblionx: path.resolve('./src/index.js')
+  },
   output: {
-    filename: 'vlibras.js',
+    filename: '[name].js',
     path: path.resolve('./build')
   },
   externals: {
